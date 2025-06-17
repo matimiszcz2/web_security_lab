@@ -54,8 +54,8 @@ def sql_injection_view(): # Definiujemy funkcję, która będzie pełnić rolę 
     return render_template('sql.html', message=message)
 
 
-# Aplikacja ufa, że wynik zapytania SQL oznacza prawdziwego użytkownika,# ale nie wie,
-# że zapytanie zostało zmanipulowane.# To właśnie stanowi istotę SQL Injection — backend zostaje oszukany.
+# Aplikacja ufa, że wynik zapytania SQL oznacza prawdziwego użytkownika, ale nie wie,
+# że zapytanie zostało zmanipulowane. To właśnie stanowi istotę SQL Injection — backend zostaje oszukany.
 
 # SQLite (lub jakakolwiek inna baza) nie ma mechanizmu wykrywania „złego” zapytania, jeśli jest ono
 # składniowo poprawne. Dla niej OR 1=1 to legalny warunek — problemem jest to, że został źle użyty przez programistę.

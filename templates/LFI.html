@@ -7,16 +7,28 @@
 </head>
 <body>
     <h1>Local File Inclusion (LFI)</h1>
+    <h2>Jak działa ten atak?</h2>
+    <p>
+        Co normalnie robi przeglądarka?<br>
+        Gdy wpisujesz adres typu <code>http://localhost:5000/lfi?page=about</code>, przeglądarka wysyła żądanie GET do serwera, z parametrem <code>page=about</code>.<br>
+        Przykładowe żądanie wygląda tak:<br>
+        <code>GET /lfi?page=about HTTP/1.1<br>
+        Host: localhost:5000</code><br><br>
 
-    <p>Ta demonstracja pokazuje podatność typu <strong>LFI</strong>, czyli wstrzyknięcie ścieżki do pliku lokalnego. Przykład ataku (na Linuxie):</p>
-    <ul>
-        <li><strong>?page=../../../../etc/passwd</strong> – próba odczytu pliku systemowego</li>
-        <li>Przykład bezpiecznego użycia: <strong>?page=about</strong></li>
-    </ul>
+        Co robi aplikacja na serwerze?<br>
+        Backend (np. aplikacja Flask) odbiera to żądanie i wykonuje kod, który odczytuje plik o nazwie wskazanej w parametrze <code>page</code>, np. <code>app.py</code> lub <code>about.txt</code>, z dysku serwera. Następnie treść tego pliku jest przesyłana do przeglądarki użytkownika. Najgroźniejsze jest to, że użytkownik może manipulować ścieżką, używając <code>../</code>, aby cofać się do nadrzędnych katalogów w strukturze plików serwera. Dzięki temu atakujący może próbować odczytać wrażliwe pliki spoza katalogu aplikacji, np. <code>/etc/passwd</code> w systemach Linux lub <code>C:\Windows\system.ini</code> w systemach Windows.<br><br>
+
+        Jeśli aplikacja nie sprawdza poprawności ścieżki, użytkownik może wpisać ścieżkę do dowolnego pliku, np. <code>../../../../etc/passwd</code> i odczytać zawartość poufnych danych z serwera.
+    </p>
+        <ul>
+            <li><strong>?page=../../../../etc/passwd</strong> – próba odczytu pliku systemowego</li>
+        </ul>
 
     <form method="get">
-        <label for="page">Wybierz stronę do załadowania:</label>
-        <input type="text" id="page" name="page" placeholder="np. about">
+        <label for="page">Wymyśl co można podać w parametrze page i na co można zamienić "???" w przeglądarce aby wykorzystać podatność:</label>
+        <p> http://127.0.0.1:5000/lfi?page="?????" </p>
+
+        <input type="text" id="page" name="page" placeholder="pamiętaj o rozszerzeniu typu .py">
         <input type="submit" value="Załaduj">
     </form>
 
@@ -32,5 +44,7 @@
     {% endif %}
 
     <a href="/" class="back-link">Powrót do strony głównej</a>
+
+
 </body>
 </html>
