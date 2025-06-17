@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratorium Cyberbezpieczeństwa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            padding: 40px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #222;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #555;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 30px;
+        }
+
+        li {
+            background-color: #fff;
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        li:hover {
+            background-color: #e8f0fe;
+        }
+
+        a {
+            text-decoration: none;
+            color: #0077cc;
+            font-size: 20px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Laboratorium Cyberbezpieczeństwa</h1>
+    <p>Wybierz moduł ataku do wykonania:</p>
+    <ul>
+        <li><a href="/xss">XSS (Cross-Site Scripting)</a></li>
+        <li><a href="/csrf">CSRF (Cross-Site Request Forgery)</a></li>
+        <li><a href="/session">Session Hijacking / Fixation</a></li>
+        <li><a href="/sql">SQL Injection</a></li>
+        <li><a href="/lfi">Local File Inclusion</a></li>
+    </ul>
+</body>
+</html>
