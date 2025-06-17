@@ -29,24 +29,36 @@ def sql_injection_view(): # Definiujemy funkcję, która będzie pełnić rolę 
             # SELECT * FROM users WHERE username = '' OR 1=1 --' AND password = 'cokolwiek'
             # SELECT * FROM users WHERE (username = '') OR (1=1); zawsze da prawde więc
             # -- oznacza komentarz, więc AND password = '...' zostaje zignorowane!
-            # Warunek 1=1 jest zawsze prawdziwy → logowanie się udaje!
+            # Warunek 1=1 jest zawsze prawdziwy
 
-
-
+            # BEZPIECZNA wersja, aby ją użyć zakomentuj linijke 23 (query = ...) i 39 (c.execute...) a odkomentuj dwie poniższe
+            # query = "SELECT * FROM users WHERE username = ? AND password = ?"
+            # c.execute(query, (username, password))
+            # W bezpiecznej wersji parametry są przekazywane oddzielnie, a silnik SQLite nie interpretuje ich jako kod, tylko jako dane
 
             print("Wykonuję zapytanie:", query) # Debug — wypisujemy zapytanie, żeby móc zobaczyć w terminalu, co dokładnie zostało wykonane
             c.execute(query) # Wykonujemy zapytanie SQL
             result = c.fetchone() # Odczytujemy pierwszy wynik zapytania (jeśli istnieje). Jeśli coś zostało znalezione — oznacza to,
             # że login i hasło „pasują” (albo: zapytanie zostało zmanipulowane i zwraca dane mimo błędnych loginu i hasła).
             if result: # Jeśli wynik istnieje (czyli użytkownik został "znaleziony"), pokazujemy komunikat o sukcesie i wypisujemy jego login (zakładamy, że result[1] to nazwa użytkownika)
+                # Warunek 1=1 jest zawsze prawdziwy, więc baza danych zwraca całą tabelę lub
+                # przynajmniej pierwszy pasujący rekord.Jeśli logika logowania opiera się tylko
+                # na sprawdzeniu if result, atakujący uzyskuje dostęp, mimo że nie zna żadnego loginu ani hasła.
                 message = "Zalogowano pomyślnie jako " + result[1] # Jeśli fetchone() nie zwróciło nic — informujemy, że dane są błędne
             else:
                 message = "Błędny login lub hasło"
         except Exception as e: # Jeśli wystąpił wyjątek (np. błędna składnia SQL, zła baza), wyświetlamy komunikat z opisem błędu
             message = "Błąd zapytania: " + str(e)
 
+
         conn.close() # Zawsze zamykamy połączenie z bazą danych, niezależnie od wyniku
+
 
     return render_template('sql.html', message=message)
 
 
+# Aplikacja ufa, że wynik zapytania SQL oznacza prawdziwego użytkownika,# ale nie wie,
+# że zapytanie zostało zmanipulowane.# To właśnie stanowi istotę SQL Injection — backend zostaje oszukany.
+
+# SQLite (lub jakakolwiek inna baza) nie ma mechanizmu wykrywania „złego” zapytania, jeśli jest ono
+# składniowo poprawne. Dla niej OR 1=1 to legalny warunek — problemem jest to, że został źle użyty przez programistę.
