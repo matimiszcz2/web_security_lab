@@ -31,6 +31,8 @@ def lfi_view(): # Tworzy funkcję widoku Flaska – ta funkcja będzie wywoływa
     # # Jeśli wartość page znajduje się na białej liście – wtedy otwieramy konkretny, przypisany plik
     # # Bezpieczeństwo:
     # # Użytkownik nie ma możliwości wpisania ../../etc/passwd ani ścieżki do pliku .py – bo taka wartość nie jest w słowniku allowed_pages.
+
+
     # NIEBEZPIECZNA WERSJA
 
     if page:
