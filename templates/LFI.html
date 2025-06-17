@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Local File Inclusion Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <h1>Local File Inclusion (LFI)</h1>
 
+    <p>Ta demonstracja pokazuje podatność typu <strong>LFI</strong>, czyli wstrzyknięcie ścieżki do pliku lokalnego. Przykład ataku (na Linuxie):</p>
+    <ul>
+        <li><strong>?page=../../../../etc/passwd</strong> – próba odczytu pliku systemowego</li>
+        <li>Przykład bezpiecznego użycia: <strong>?page=about</strong></li>
+    </ul>
+
+    <form method="get">
+        <label for="page">Wybierz stronę do załadowania:</label>
+        <input type="text" id="page" name="page" placeholder="np. about">
+        <input type="submit" value="Załaduj">
+    </form>
+
+    {% if included_content %}
+        <div class="included-content">
+            <h2>Załadowana zawartość:</h2>
+            <pre>{{ included_content }}</pre>
+        </div>
+    {% endif %}
+
+    {% if message %}
+        <p class="message">{{ message }}</p>
+    {% endif %}
+
+    <a href="/" class="back-link">Powrót do strony głównej</a>
 </body>
 </html>

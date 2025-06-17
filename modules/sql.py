@@ -1,11 +1,9 @@
 from flask import request, render_template
 import sqlite3
 import os
-
 def sql_injection_view(): # Definiujemy funkcję, która będzie pełnić rolę widoku w Flasku — tzn. obsłuży zapytania na trasie /sql
     message = "" # Zmienna message to informacja, która zostanie przekazana do szablonu HTML — np. "Zalogowano pomyślnie", albo "Błędny login"
     db_path = os.path.join("db", "users.db") #  Tworzymy ścieżkę do pliku bazy danych. Dzięki os.path.join() będzie działać poprawnie zarówno na Windows, jak i Linuxie/Macu
-
     if request.method == 'POST': # Sprawdzamy, czy użytkownik wysłał formularz (czyli metoda HTTP to POST). Jeśli nie — formularz będzie tylko wyświetlony, bez logiki logowania
         username = request.form['username']
         password = request.form['password']
@@ -31,11 +29,10 @@ def sql_injection_view(): # Definiujemy funkcję, która będzie pełnić rolę 
             # -- oznacza komentarz, więc AND password = '...' zostaje zignorowane!
             # Warunek 1=1 jest zawsze prawdziwy
 
-            # BEZPIECZNA wersja, aby ją użyć zakomentuj linijke 23 (query = ...) i 39 (c.execute...) a odkomentuj dwie poniższe
+            # BEZPIECZNA wersja, aby ją użyć zakomentuj linijke 21 oraz 37 : (query = ...) oraz  (c.execute...) a odkomentuj dwie poniższe
             # query = "SELECT * FROM users WHERE username = ? AND password = ?"
             # c.execute(query, (username, password))
             # W bezpiecznej wersji parametry są przekazywane oddzielnie, a silnik SQLite nie interpretuje ich jako kod, tylko jako dane
-
             print("Wykonuję zapytanie:", query) # Debug — wypisujemy zapytanie, żeby móc zobaczyć w terminalu, co dokładnie zostało wykonane
             c.execute(query) # Wykonujemy zapytanie SQL
             result = c.fetchone() # Odczytujemy pierwszy wynik zapytania (jeśli istnieje). Jeśli coś zostało znalezione — oznacza to,

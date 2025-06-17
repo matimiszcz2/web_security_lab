@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from modules.sql import sql_injection_view
+from modules.LFI import lfi_view
 
 app = Flask(__name__)
 
@@ -10,6 +11,10 @@ def index():
 
 # Widok z SQL Injection
 app.add_url_rule('/sql', view_func=sql_injection_view, methods=['GET', 'POST'])
+
+@app.route("/lfi")
+def lfi():
+    return lfi_view()
 
 if __name__ == '__main__':
     app.run(debug=True)
