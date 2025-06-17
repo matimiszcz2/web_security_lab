@@ -48,3 +48,5 @@ def sql_injection_view(): # Definiujemy funkcję, która będzie pełnić rolę 
         conn.close() # Zawsze zamykamy połączenie z bazą danych, niezależnie od wyniku
 
     return render_template('sql.html', message=message)
+
+
