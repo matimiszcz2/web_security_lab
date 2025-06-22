@@ -1,52 +1,39 @@
-from flask import request, session, redirect, url_for, render_template_string, render_template
+from flask import request, session, redirect, url_for, render_template
 
-
-#wersja podatna - brak regeneracji, sesja może być przeklejona przez URL
-def login_unsafe():
+# Widok logowania – podatny na Session Fixation
+def login_view():
     if request.method == "POST":
         username = request.form.get("username")
-        session["user"] = username #nie regenerujemy sesji
-        #dla demonstracji: kopiujemy sid_from_url + user_session_id
-        session['user_session_id'] = session.get('sid_from_url', 'brak')
-        return redirect(url_for('profile_view'))
 
-    return render_template_string('''
-        <h2>Logowanie (podatne)</h2>
-        <form method="post">
-            <input name="username" placeholder="Nazwa użytkownika">
-            <button>Zaloguj</button>
-        </form>
-        <p>Symuluj atak: dodaj ?sid=XYZ do URL przed logowaniem</p>
-    ''')
+        # Przypisanie użytkownika do sesji (bez regeneracji ID – podatność!)
+        session['user'] = username
 
-#wersja bezpieczna - czysta sesja i regeneracja
-def login_safe():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        if username == 'admin' and password == 'admin':
-            session.clear()                 # czyścimy starą sesję
-            session.permanent = True        # aktywujemy trwałość
-            session['user'] = username
-            session['user_session_id'] = 'nowa_sesja'   # czysta ID
-            return redirect(url_for('profile_view'))
+        # Symulowane przejęcie ID sesji z parametru URL (?sid=...)
+        session['user_session_id'] = request.args.get('sid', 'brak')
 
-    return render_template("SH.html", user=session.get('user'), sid=session.get('user_session_id'))
+        return redirect(url_for('profile_view'))  # Przekierowanie do profilu
 
+    # Widok formularza logowania
+    return render_template("SH.html", user=session.get('user'))
 
-#widok profilu - pokazuje stan sesji i ewentualne przejecia
+# Widok profilu – pokazuje przechwycony ID sesji oraz faktyczny ID sesji z cookie
 def profile_view():
-    user = session.get('user')
-    sid = session.get('user_session_id', 'brak')
-    if user:
-        return render_template_string(f'''
-        <h2>Witaj, {user}!</h2>
-        <p><strong>ID sesji użytkownika:</strong> {sid}</p>
-        <a href="/logout">Wyloguj</a>
-    ''')
-    return redirect(url_for('login_unsafe'))
+    user = session.get("user")
+    sid = session.get("user_session_id", "brak")
 
-#wylogowanie
+    # Faktyczny ID sesji (z ciasteczka "session")
+    real_session_id = request.cookies.get('session', 'brak')
+
+    if user:
+        return f"""
+        <h1>Witaj, {user}!</h1>
+        <p><strong>Przechwycone ID sesji (z URL):</strong> {sid}</p>
+        <p><strong>Prawdziwe session cookie (Flask):</strong> {real_session_id}</p>
+        <a href='/logout'>Wyloguj</a>
+        """
+    return redirect(url_for("login_view"))
+
+# Wylogowanie – wyczyszczenie sesji
 def logout_view():
     session.clear()
-    return redirect(url_for('login_unsafe'))
+    return redirect(url_for("login_view"))

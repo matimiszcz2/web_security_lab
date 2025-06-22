@@ -2,48 +2,48 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Demo sesji Flask</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>XSS</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Flask – Demo sesji</h1>
+<body class="bg-light">
 
-    <h2>Jak działa sesja w aplikacjach webowych?</h2>
-    <p>
-        HTTP jest protokołem bezstanowym – każda strona ładowana jest niezależnie. Aby zapamiętać użytkownika (np. po zalogowaniu),
-        aplikacja musi przechowywać dane w sesji.
-    </p>
-    <p>
-        W Flasku sesja to słownik przechowywany po stronie serwera (lub zakodowany ciasteczkiem). Możemy tam trzymać np. <code>session['user'] = 'admin'</code>.
+<div class="container mt-5">
+    <h1 class="mb-4">XSS (Cross-Site Scripting)</h1>
+
+    <p class="lead">
+        Atak XSS polega na wstrzyknięciu i wykonaniu złośliwego kodu JavaScript w przeglądarce innego użytkownika.<br>
+        Ten formularz komentarzy nie filtruje danych wejściowych, więc jest podatny na XSS.
     </p>
 
-    <h2>Demo logowania</h2>
+    <div class="alert alert-warning">
+        <strong>Spróbuj ataku:</strong><br>
+        Wpisz w komentarzu:
+        <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+    </div>
 
-    {% if user %}
-        <p><strong>Witaj, {{ user }}!</strong></p>
-        <form method="post" action="/logout">
-            <button>Wyloguj</button>
-        </form>
+    <form method="post" class="bg-white p-4 rounded shadow-sm mb-4">
+        <div class="mb-3">
+            <label for="comment" class="form-label">Dodaj komentarz:</label>
+            <textarea id="comment" name="comment" class="form-control" rows="3" placeholder="Twój komentarz..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Wyślij</button>
+    </form>
+
+    <h4 class="mt-5">Komentarze:</h4>
+    {% if comments %}
+        <ul class="list-group">
+            {% for c in comments %}
+                <!-- UWAGA: to miejsce celowo nie używa filtrowania (np. |e), by pokazać podatność -->
+                <li class="list-group-item">{{ c|safe }}</li>
+            {% endfor %}
+        </ul>
     {% else %}
-        <form method="post" action="/login">
-            <label for="username">Podaj nazwę użytkownika:</label><br>
-            <input id="username" name="username" placeholder="np. admin"><br><br>
-            <button>Zaloguj</button>
-        </form>
+        <p class="text-muted">Brak komentarzy.</p>
     {% endif %}
 
-    <h2>Stan sesji:</h2>
-    <ul>
-        {% if user %}
-            <li><strong>Użytkownik:</strong> {{ user }}</li>
-        {% else %}
-            <li>Brak danych w sesji</li>
-        {% endif %}
-    </ul>
+    <a href="/" class="btn btn-outline-secondary mt-4">Powrót do strony głównej</a>
+</div>
 
-    <hr>
-    <p><strong>Wskazówka:</strong> Po zalogowaniu Flask automatycznie przypisuje Ci ID sesji i przechowuje dane w pliku cookie. Dzięki temu aplikacja wie, kim jesteś – nawet po przeładowaniu strony.</p>
-
-    <a href="/" class="back-link">Powrót do strony głównej</a>
 </body>
 </html>

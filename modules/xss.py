@@ -1,18 +1,14 @@
-from flask import request, session, redirect, url_for, render_template
+from flask import request, render_template
 
-def login_view():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        if username == 'admin':
-            session.permanent = True
-            session['user'] = username
-            return redirect(url_for('profile_view'))
+# Prosta lista komentarzy (symuluje bazę danych)
+comments = []
 
-    # ⬇️ Tu renderujesz stronę logowania
-    return render_template('xss.html')
-
-def profile_view():
-    user = session.get('user')
-    if user:
-        return f"Siema, {user}!"
-    return "Nie jesteś zalogowany"
+# Widok XSS – pozwala dodawać komentarze
+def xss_view():
+    global comments
+    if request.method == "POST":
+        # Pobieramy komentarz z formularza
+        comment = request.form.get("comment")
+        comments.append(comment)  # Dodajemy bez żadnej filtracji (intencjonalnie)
+    # Renderujemy widok i przekazujemy listę komentarzy
+    return render_template("xss.html", comments=comments)
