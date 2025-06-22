@@ -1,4 +1,5 @@
-from flask import request, session, redirect, url_for, render_template_string
+from flask import request, session, redirect, url_for, render_template_string, render_template
+
 
 #wersja podatna - brak regeneracji, sesja może być przeklejona przez URL
 def login_unsafe():
@@ -24,21 +25,14 @@ def login_safe():
         username = request.form.get("username")
         password = request.form.get("password")
         if username == 'admin' and password == 'admin':
-            session.clear()                 #czyscimy stara sesje
-            session.permanent = True        #aktywujemy trwalosc
+            session.clear()                 # czyścimy starą sesję
+            session.permanent = True        # aktywujemy trwałość
             session['user'] = username
-            session['user_session_id'] = 'nowa_sesja'   #czysta ID
+            session['user_session_id'] = 'nowa_sesja'   # czysta ID
             return redirect(url_for('profile_view'))
 
-    return render_template_string('''
-        <h2>Logowanie (bezpieczne)</h2>
-        <form method="post">
-            <input name="username"><br>
-            <input name="password" type="password"><br>
-            <button>Zaloguj</button>
-        </form>
-        <p>Login: admin | Hasło: admin</p>
-    ''')
+    return render_template("session_hijack_demo.html", user=session.get('user'), sid=session.get('user_session_id'))
+
 
 #widok profilu - pokazuje stan sesji i ewentualne przejecia
 def profile_view():
