@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Demo sesji Flask</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <h1>Flask – Demo sesji</h1>
 
+    <h2>Jak działa sesja w aplikacjach webowych?</h2>
+    <p>
+        HTTP jest protokołem bezstanowym – każda strona ładowana jest niezależnie. Aby zapamiętać użytkownika (np. po zalogowaniu),
+        aplikacja musi przechowywać dane w sesji.
+    </p>
+    <p>
+        W Flasku sesja to słownik przechowywany po stronie serwera (lub zakodowany ciasteczkiem). Możemy tam trzymać np. <code>session['user'] = 'admin'</code>.
+    </p>
+
+    <h2>Demo logowania</h2>
+
+    {% if user %}
+        <p><strong>Witaj, {{ user }}!</strong></p>
+        <form method="post" action="/logout">
+            <button>Wyloguj</button>
+        </form>
+    {% else %}
+        <form method="post" action="/login">
+            <label for="username">Podaj nazwę użytkownika:</label><br>
+            <input id="username" name="username" placeholder="np. admin"><br><br>
+            <button>Zaloguj</button>
+        </form>
+    {% endif %}
+
+    <h2>Stan sesji:</h2>
+    <ul>
+        {% if user %}
+            <li><strong>Użytkownik:</strong> {{ user }}</li>
+        {% else %}
+            <li>Brak danych w sesji</li>
+        {% endif %}
+    </ul>
+
+    <hr>
+    <p><strong>Wskazówka:</strong> Po zalogowaniu Flask automatycznie przypisuje Ci ID sesji i przechowuje dane w pliku cookie. Dzięki temu aplikacja wie, kim jesteś – nawet po przeładowaniu strony.</p>
+
+    <a href="/" class="back-link">Powrót do strony głównej</a>
 </body>
 </html>
